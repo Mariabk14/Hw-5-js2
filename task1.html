@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Натисни правильну клавішу</title>
+
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@pnotify/core@5.2.0/dist/PNotify.css">
+</head>
+
+<body>
+  <h1>Натисни правильну клавішу</h1>
+
+  <p id="message">Натисни клавішу:</p>
+  <h2 id="key"></h2>
+
+  <button id="newGame">Нова гра</button>
+
+  <script src="https://cdn.jsdelivr.net/npm/@pnotify/core@5.2.0/dist/PNotify.js"></script>
+
+  <script>
+    const keys = ['a', 's', 'd', 'f', 'j', 'k', 'l', 'q', 'w', 'e'];
+
+    let currentKeyIndex = 0;
+
+    const keyElement = document.getElementById('key');
+    const messageElement = document.getElementById('message');
+    const newGameButton = document.getElementById('newGame');
+
+    // Встановлюємо першу клавішу
+    keyElement.textContent = keys[currentKeyIndex];
+
+    // Обробник keydown
+    document.addEventListener('keydown', (event) => {
+      // Ігноруємо натискання, якщо користувач утримує клавішу
+      if (event.repeat) {
+        return;
+      }
+
+      const pressedKey = event.key.toLowerCase();
+      const currentKey = keys[currentKeyIndex];
+
+      if (pressedKey === currentKey) {
+        PNotify.success({
+          text: 'Правильно! Молодець!',
+          delay: 1000
+        });
+
+        currentKeyIndex++;
+
+        // Якщо всі клавіші пройдено
+        if (currentKeyIndex >= keys.length) {
+          PNotify.success({
+            text: 'Вітаємо! Ви пройшли гру!',
+            delay: 3000
+          });
+
+          messageElement.textContent = 'Гру завершено!';
+          keyElement.textContent = '🎉';
+          return;
+        }
+
+        // Показуємо наступну клавішу
+        keyElement.textContent = keys[currentKeyIndex];
+      } else {
+        PNotify.error({
+          text: `Помилка! Потрібно натиснути "${currentKey}".`,
+          delay: 1500
+        });
+      }
+    });
+
+    // Обробник keypress
+    document.addEventListener('keypress', (event) => {
+      event.preventDefault();
+    });
+
+    // Нова гра
+    newGameButton.addEventListener('click', () => {
+      currentKeyIndex = 0;
+
+      keyElement.textContent = keys[currentKeyIndex];
+      messageElement.textContent = 'Нова гра! Натисни клавішу:';
+
+      PNotify.info({
+        text: `Нова гра розпочата! Натисни "${keys[currentKeyIndex]}".`,
+        delay: 2000
+      });
+    });
+  </script>
+</body>
+</html>
